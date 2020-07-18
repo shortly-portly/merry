@@ -1,6 +1,5 @@
 (ns merry.widget
-  (:require [reagent.dom :as rdom]
-            [reagent.core :as r]
+  (:require [reagent.core :as r]
             [re-frame.core :as rf]))
 
 (defmulti widget :type)
@@ -20,17 +19,25 @@
           :on-blur #(rf/dispatch [:update data-path schema-path @value])}]
         (if error [:div.invalid-feedback error]) ]))))
 
+(defmethod widget :button [{:keys [label dispatch style]}]
+  (fn []
+    [:button.btn.mr-2 {:class style
+                  :on-click #(rf/dispatch dispatch)} label]))
 
 (defmethod widget :form [form-data]
   (fn []
     (let [root   [(:path form-data)]
-          fields (:fields form-data)]
+          fields (:fields form-data)
+          actions (:actions form-data)]
       [:div
        (for [field fields]
          (let [data-path   (conj root (:path field))
                schema-path (conj root (:path field))
                widget-data (assoc field :data-path data-path :schema-path schema-path)]
-         ^{:key (:path field)} [widget widget-data]))])))
+           ^{:key (:path field)} [widget widget-data]))
+
+        (for [action actions]
+          ^{:key (:dispatch action)} [widget action])])))
 
 (defmethod widget :collection [collection-data]
   (fn []

@@ -55,7 +55,7 @@
 
 (defn test-page []
 
-  [:div
+  [:section.section>div.container>div.content
    [w/widget v/parent-form]]
   )
 

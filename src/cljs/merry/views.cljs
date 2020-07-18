@@ -3,6 +3,16 @@
 (def parent-form
   {:path :parent
    :type :form
+   :actions [{:label "Submit"
+              :type :button
+              :dispatch [:submit-form :parent]
+              :style "btn-primary"}
+
+             {:label "Cancel"
+              :type :button
+              :dispatch [:cancel-form :parent]
+              :style "btn-secondary"}]  
+
    :fields [{:path :first-name
              :label "First Name"
              :type :text-input}
