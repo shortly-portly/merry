@@ -9,6 +9,7 @@
     [reitit.ring.middleware.parameters :as parameters]
     [merry.middleware.formats :as formats]
     [merry.middleware.exception :as exception]
+    [merry.routes.organisations :as organisation]
     [ring.util.http-response :refer :all]
     [clojure.java.io :as io]))
 
@@ -34,6 +35,7 @@
                  ;; multipart
                  multipart/multipart-middleware]}
 
+   organisation/organisation-routes
    ;; swagger documentation
    ["" {:no-doc true
         :swagger {:info {:title "my-api"

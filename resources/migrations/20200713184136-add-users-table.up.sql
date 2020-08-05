@@ -3,7 +3,6 @@ CREATE TABLE users
  first_name VARCHAR(30),
  last_name VARCHAR(30),
  email VARCHAR(30),
- admin BOOLEAN,
+ password VARCHAR(300),
  last_login TIMESTAMP,
- is_active BOOLEAN,
- pass VARCHAR(300));
+ is_active BOOLEAN);

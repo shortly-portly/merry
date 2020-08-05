@@ -80,33 +80,7 @@
                                    :controllers [{:start (fn [foo] (js/console.log "fooooo"))}]}])
 (def router
   (reitit/router
-   ["/" {:wibble :foo}
-
-
-    [["wibble" {:name :wibble/index
-
-
-       :controllers [{:start (fn [_] (js/console.log "wibble index"))}]
-                }]
-     ["wibble/new" {:name :wibble/new
-                    :conflicting true
-
-       :controllers [{:start (fn [_] (js/console.log "wibble new"))}]
-                  }]
-     ["wibble/:id" {:name :wibble/show
-                    :conflicting true
-
-       :controllers [{:start (fn [_] (js/console.log "wibble show called"))}]
-                  }]
-   ["wibble/:id/edit" {:name :wibble/edit
-
-       :controllers [{:start (fn [_] (js/console.log "wibble edit called"))}]
-
-
-                       }]]
-
-
-
+   ["/"
     ["" {
          :name        :home
          :view        #'home-page
@@ -120,7 +94,6 @@
 
      ["/new"
       {
-       :conflicting true
        :name        :org-new
        :view        #'home-page
        :controllers [{:start (fn [_] (js/console.log "/org/new called"))}]}]
@@ -128,7 +101,6 @@
      ["/:id"
       {
        :name        :org-fetch
-       :conflicting true
        :view        #'home-page
        :controllers [{:start (fn [_] (js/console.log "/org/fetch called"))}]}]
      ]]))

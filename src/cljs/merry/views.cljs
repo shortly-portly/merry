@@ -3,10 +3,12 @@
 (def parent-form
   {:path :parent
    :type :form
-   :actions [{:label "Submit"
-              :type :button
-              :dispatch [:submit-form :parent]
-              :style "btn-primary"}
+   :actions [{
+              :type :submit-button
+              :dispatch :submit-form
+              :route-name :merry.events/ping
+              :parameters {:user-id [:data :parent :first-name]}
+              :on-success [:update-parents]}
 
              {:label "Cancel"
               :type :button
@@ -40,3 +42,14 @@
                        :label "Wobble Foo"
                        :type :text-input}
                       ]}]})
+
+
+(def list-parents
+  {:path :parents
+   :type :list
+   :actions [{:label "Details"
+              :type :button
+              :dispatch :parent-details
+              :parameters [:id]
+              :style "btn-primary"}]
+   })

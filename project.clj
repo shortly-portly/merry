@@ -19,6 +19,7 @@
                  [day8.re-frame/http-fx "0.1.6"]
                  [expound "0.8.5"]
                  [funcool/struct "1.4.0"]
+                 [honeysql "1.0.444"]
                  [luminus-migrations "0.6.7"]
                  [luminus-transit "0.1.2"]
                  [luminus-undertow "0.1.6"]
@@ -55,7 +56,8 @@
   :target-path "target/%s/"
   :main ^:skip-aot merry.core
 
-  :plugins [[lein-cljsbuild "1.1.7"]] 
+  :plugins [[lein-codox "0.10.7"]
+            [lein-cljsbuild "1.1.7"]]
   :clean-targets ^{:protect false}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :figwheel

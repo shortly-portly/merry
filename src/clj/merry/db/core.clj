@@ -1,5 +1,7 @@
 (ns merry.db.core
   (:require
+   [honeysql.core :as sql]
+   [honeysql.helpers :refer :all :as helpers]
     [next.jdbc.date-time]
     [next.jdbc.result-set]
     [conman.core :as conman]
@@ -28,3 +30,7 @@
     (.toLocalTime v))
   (read-column-by-index [^java.sql.Time v _2 _3]
     (.toLocalTime v)))
+
+(defn generic-insert [table-name field-values]
+  (-> (insert-into table-name)
+      (values field-values)))

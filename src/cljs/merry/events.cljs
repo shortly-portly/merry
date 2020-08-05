@@ -6,11 +6,71 @@
    [malli.util :as mu]
    [malli.error :as me]
    [malli.transform :as mt]
+   [reitit.core :as r]
    [reitit.frontend.easy :as rfe]
    [reitit.frontend.controllers :as rfc]
+   [merry.schemas.organisation :as org]
    [merry.model :as model]))
 
+;; Routes
+(def router
+  (r/router
+   ["api/"
+    ["ping/:user-id" ::ping]]))
+
+(prn (r/routes router))
+
+(defn map-vals
+  "Given a map and a function, returns the map resulting from applying
+  the function to each value"
+  [m f]
+  (zipmap (keys m) (map f (vals m))))
+
+(defn create-url
+  "Given a route name and a map of parameters return a url.
+
+  The parameter map has keys that correspond to path parameters with the value
+  representing a map into the re-frame db"
+  [db route-name parameters]
+  (let [url-parameters (map-vals parameters (fn [path] (get-in db path)))]
+    (prn "routes : " (r/route-names router))
+    (prn "route-name :" route-name)
+    (prn "url-parameters :" url-parameters)
+    (r/match-by-name router route-name url-parameters)))
+
+(rf/reg-event-db
+ :set-new-org
+ (fn [db [_ result]]
+   (prn ":set-new-org called")
+   (assoc db :view (:view result) :schema org/organisation-model)))
+
+(rf/reg-event-fx
+ :get-new-org
+ (fn [{:keys [db]} _]
+     {:http-xhrio {:method :get
+                   :uri "/api/organisations/new"
+                   :format (ajax/transit-request-format)
+                   :response-format (ajax/transit-response-format)
+                   :on-success [:set-new-org]}}))
+(rf/reg-event-fx
+ :create-org
+ (fn [{:keys [db]} _]
+     {:http-xhrio {:method :post
+                   :uri "/api/organisations"
+                   :format (ajax/transit-request-format)
+                   :response-format (ajax/transit-response-format)
+                   :on-success [:list-organisations]}}))
+
 ;;dispatchers
+(rf/reg-event-db
+ :submit-form
+ (fn [db [_ {:keys [route-name parameters on-success]}]]
+   (let [submit-url (create-url db route-name parameters)]
+     {:http-xhrio {:method :delete
+                   :uri submit-url
+                   :format (ajax/transit-request-format)
+                   :response-format (ajax/transit-response-format)
+                   :on-success on-success}})))
 
 (rf/reg-event-db
  :common/navigate
@@ -79,7 +139,7 @@
         (assoc-in db (into [:data] data-path) converted-value)
         (assoc-in  (into [:error] data-path) nil))
        (->
-        (assoc-in db (into [:error2] data-path)
+        (assoc-in db (into [:error] data-path)
                   (-> (m/explain schema converted-value)
                       (me/humanize))))))))
 
@@ -128,10 +188,21 @@
 (rf/reg-sub
  :error
  (fn [db [_ path]]
-   (let [error (:error2 db)]
+   (let [error (:error db)]
      (first (get-in error path)))))
 (rf/reg-sub
  :item-count
  (fn [db [_ path]]
    (let [doc (:data db)]
      (count (get-in doc path)))))
+
+(rf/reg-sub
+ :new-org
+ (fn [db _]
+   (:view db)))
+
+(rf/reg-sub
+ :new-org2
+ (fn [db _]
+   (prn ":new org 2 called")
+   (if (:view db) (:view db) {:path :first-name :type :text-input})))
